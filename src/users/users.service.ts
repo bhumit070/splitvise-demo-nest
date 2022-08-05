@@ -25,6 +25,20 @@ export class UsersService {
     return user;
   }
 
+  async searchUsers(findUserPayload: IFindOne) {
+    const orQuery = [];
+    if (findUserPayload._id) orQuery.push({ _id: findUserPayload._id });
+    if (findUserPayload.email) orQuery.push({ email: findUserPayload.email });
+    if (findUserPayload.username)
+      orQuery.push({ username: findUserPayload.username });
+
+    return orQuery.length
+      ? this.UserModel.find({
+          $or: orQuery,
+        })
+      : this.UserModel.find();
+  }
+
   // TODO: HANDLE THIS ANY LATER
   async updateUser(condition: IFindOne, infoToUpdate: any) {
     return await this.UserModel.updateOne(condition, infoToUpdate);
