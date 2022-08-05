@@ -24,4 +24,9 @@ export class UsersService {
     }
     return user;
   }
+
+  // TODO: HANDLE THIS ANY LATER
+  async updateUser(condition: IFindOne, infoToUpdate: any) {
+    return await this.UserModel.updateOne(condition, infoToUpdate);
+  }
 }

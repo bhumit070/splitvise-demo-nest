@@ -2,16 +2,20 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { PRODUCTION_NODE_ENV } from 'src/constants';
 
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dtos/user.dto';
+import {
+  CreateUserDto,
+  ForgotPasswordDto,
+  VerifyPasswordDto,
+} from './dtos/user.dto';
 import { JwtAuthGuard } from './guards/jwt.auth.guard';
 import { LocalAuthGuard } from './guards/local.auth.guard';
 
@@ -30,7 +34,7 @@ export class AuthController {
     const user = req.user as CreateUserDto & { _id: string };
     const userInfo = this.authService.login(user);
     res.cookie('access_token', userInfo.access_token, {
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === PRODUCTION_NODE_ENV,
       httpOnly: true,
     });
     return userInfo;
@@ -40,5 +44,21 @@ export class AuthController {
   @Get('profile')
   profile(@Req() req: Request) {
     return req.user;
+  }
+
+  @Post('/forgot-password-otp')
+  async forgotPasswordOtp(@Body() data: ForgotPasswordDto) {
+    await this.authService.forgotPasswordOtp(data);
+    return {
+      message: 'OTP sent to your email',
+    };
+  }
+
+  @Post('/verify-forgot-password')
+  async verifyForgotPassword(@Body() data: VerifyPasswordDto) {
+    await this.authService.verifyForgotPasswordOtp(data);
+    return {
+      message: 'Password changed successfully',
+    };
   }
 }

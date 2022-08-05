@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, IsNumber } from 'class-validator';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -15,4 +15,23 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+// TODO: FIGURE OUT WHY PARTIAL TYPE IS NOT WORKING...
+export class ForgotPasswordDto {
+  @IsString()
+  @IsEmail()
+  email: string;
+}
+
+export class VerifyPasswordDto {
+  @IsNumber()
+  otp: number;
+
+  @IsString()
+  password: string;
+
+  @IsString()
+  @IsEmail()
+  email: string;
 }

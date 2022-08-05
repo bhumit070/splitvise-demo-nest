@@ -1,12 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { hashSync } from 'bcryptjs';
+import { check } from 'prettier';
 
-type User = {
+export type User = {
   name: string;
   username: string;
   email: string;
   password: string;
+  forgotPasswordOtp: {
+    otp: number;
+    expiresAt: Date;
+  };
 };
 
 export type UserDocument = User & Document;
@@ -37,18 +42,19 @@ export class Users {
     required: true,
   })
   password: string;
+
+  @Prop({
+    type: Object,
+  })
+  forgotPasswordOtp: {
+    otp: number;
+    expiresAt: Date;
+  };
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);
 
 UserSchema.pre('save', function (next) {
   this.password = hashSync(this.password, 10);
-  return next();
-});
-
-UserSchema.pre('updateOne', function (next) {
-  if (this.isModified(this.password)) {
-    this.password = hashSync(this.password, 10);
-  }
   return next();
 });
