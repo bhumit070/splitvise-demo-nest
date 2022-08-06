@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { hashSync } from 'bcryptjs';
-import { check } from 'prettier';
 
 export type User = {
+  _id?: string;
   name: string;
   username: string;
   email: string;
