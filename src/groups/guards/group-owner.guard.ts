@@ -12,7 +12,8 @@ export class IsGroupOwnerGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const user = context.switchToHttp().getRequest().user as User;
+    const request = context.switchToHttp().getRequest();
+    const user = request.user as User;
     const groupId = context.switchToHttp().getRequest()?.params?.groupId;
 
     const group = await this.ExpenseGroupModel.findById(groupId).lean();
@@ -20,6 +21,8 @@ export class IsGroupOwnerGuard implements CanActivate {
     if (!group) {
       return false;
     }
+
+    request.group = group;
 
     return String(user._id) === String(group.createdBy);
   }

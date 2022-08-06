@@ -17,4 +17,25 @@ export class GroupsService {
       createdBy: userId,
     });
   }
+
+  async updateGroup(
+    createGroupPayload: CreateGroupDto,
+    groupId: string,
+    userId: string,
+  ) {
+    const updated = await this.ExpenseGroupModel.findOneAndUpdate(
+      { createdBy: userId, _id: groupId },
+      { name: createGroupPayload.name },
+      { new: true },
+    );
+
+    return updated;
+  }
+
+  deleteGroup(groupId: string, userId: string) {
+    return this.ExpenseGroupModel.deleteOne({
+      createdBy: userId,
+      _id: groupId,
+    });
+  }
 }

@@ -19,9 +19,9 @@ export class GroupsController {
 
   @Patch('/:groupId')
   @UseGuards(IsGroupOwnerGuard)
-  updateGroup() {
-    return {
-      message: 'Update group',
-    };
+  updateGroup(@Body() createGroupDto: CreateGroupDto, @Req() req: Request) {
+    const groupId = req.params.groupId;
+    const user = req.user as User;
+    return this.groupsService.updateGroup(createGroupDto, groupId, user._id);
   }
 }
