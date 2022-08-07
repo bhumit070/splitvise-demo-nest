@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { FilterQuery, Model } from 'mongoose';
 import { ExpenseGroup } from 'src/mongodb/models/group.model';
 import { CreateGroupDto } from './dtos/group.dto';
 
@@ -37,5 +37,20 @@ export class GroupsService {
       createdBy: userId,
       _id: groupId,
     });
+  }
+
+  async getGroups(userId: string, groupId?: string) {
+    userId = String(userId);
+    const findGroupsQuery: FilterQuery<ExpenseGroup> = {
+      $or: [
+        { createdBy: userId },
+        { members: { $elemMatch: { user: userId } } },
+      ],
+    };
+    if (groupId && mongoose.Types.ObjectId.isValid(groupId)) {
+      findGroupsQuery.$and = [{ _id: groupId }];
+    }
+    const result = await this.ExpenseGroupModel.find(findGroupsQuery);
+    return groupId ? result[0] : result;
   }
 }

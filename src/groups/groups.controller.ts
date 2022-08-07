@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Patch,
   Post,
   Req,
@@ -9,9 +10,11 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
+import { ExpenseGroup } from 'src/mongodb/models/group.model';
 import { User } from 'src/mongodb/models/user.model';
 import { CreateGroupDto } from './dtos/group.dto';
 import { GroupsService } from './groups.service';
+import { IsGroupMember } from './guards/group-member.guard';
 import { IsGroupOwnerGuard } from './guards/group-owner.guard';
 
 @Controller('groups')
@@ -39,5 +42,17 @@ export class GroupsController {
     const groupId = req.params.groupId;
     const user = req.user as User;
     return this.groupsService.deleteGroup(groupId, user._id);
+  }
+
+  @Get('/:groupId')
+  @UseGuards(IsGroupMember)
+  getGroupById(@Req() req: Request & { group: ExpenseGroup }) {
+    return req.group;
+  }
+
+  @Get()
+  getGroups(@Req() req: Request) {
+    const user = req.user as User;
+    return this.groupsService.getGroups(user._id);
   }
 }
